@@ -92,6 +92,8 @@ export default function CartPage() {
         }))
       };
 
+      console.log('Sending order data:', JSON.stringify(orderData));
+
       // Send order to the API
       const response = await fetch('/api/orders', {
         method: 'POST',
@@ -102,6 +104,7 @@ export default function CartPage() {
       });
 
       const data = await response.json();
+      console.log('API response:', response.status, JSON.stringify(data));
 
       if (response.ok) {
         // Clear cart after successful order
@@ -115,7 +118,7 @@ export default function CartPage() {
       }
     } catch (error) {
       console.error('Error placing order:', error);
-      toast.error(error.message || 'There was an error placing your order');
+      toast.error(`Order failed: ${error.message || 'Unknown error'}`);
     } finally {
       setIsSubmitting(false);
     }
