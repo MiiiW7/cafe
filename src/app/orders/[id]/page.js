@@ -8,21 +8,33 @@ import PageLayout from '../../page-layout';
 import { useAuth } from '../../../context/AuthContext';
 import { FiArrowLeft, FiCalendar, FiClock, FiMapPin, FiPhone } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { use } from 'react';
 
 export default function OrderDetail({ params }) {
   const router = useRouter();
   const { user } = useAuth();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
-  const orderId = params.id;
+  
+  // Menggunakan React.use() untuk unwrap params
+  const id = use(params).id;
 
   const fetchOrderDetails = useCallback(async () => {
     try {
       setLoading(true);
-      console.log('Fetching order details for ID:', orderId);
-      const response = await fetch(`/api/orders/${orderId}`);
+      console.log('Fetching order details for ID:', id);
+      
+      // Tambahkan error handling lebih baik
+      if (!id) {
+        throw new Error('Order ID is missing');
+      }
+      
+      const response = await fetch(`/api/orders/${id}`);
       
       if (!response.ok) {
+        console.error('Response status:', response.status);
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
         throw new Error('Failed to fetch order details');
       }
       
@@ -39,11 +51,11 @@ export default function OrderDetail({ params }) {
       setOrder(data);
     } catch (error) {
       console.error('Error fetching order details:', error);
-      toast.error('Failed to load order details');
+      toast.error(`Failed to load order details: ${error.message}`);
     } finally {
       setLoading(false);
     }
-  }, [orderId, router, user]);
+  }, [id, router, user]);
 
   useEffect(() => {
     // Redirect if user is not logged in
@@ -104,7 +116,7 @@ export default function OrderDetail({ params }) {
             <FiArrowLeft className="mr-1 h-4 w-4" />
             Back to orders
           </Link>
-          <h1 className="mt-2 text-2xl font-bold text-gray-900">Order #{orderId}</h1>
+          <h1 className="mt-2 text-2xl font-bold text-gray-900">Order #{id}</h1>
         </div>
 
         {loading ? (
@@ -167,11 +179,11 @@ export default function OrderDetail({ params }) {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {order.items.map((item) => (
+                      {order.items && order.items.map((item) => (
                         <tr key={item.id}>
                           <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-sm">
-                            <div className="font-medium text-gray-900">{item.menuItem.name}</div>
-                            <div className="text-gray-500 capitalize">{item.menuItem.category.toLowerCase()}</div>
+                            <div className="font-medium text-gray-900">{item.menuItem?.name || 'Unknown Item'}</div>
+                            <div className="text-gray-500 capitalize">{(item.menuItem?.category || 'unknown').toLowerCase()}</div>
                           </td>
                           <td className="px-2 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
                             Rp {(item.price * 1000).toLocaleString()}
@@ -200,7 +212,7 @@ export default function OrderDetail({ params }) {
               </div>
             </div>
 
-            {/* Delivery Information */}
+            {/* Delivery Information - hanya tampilkan jika ada */}
             {order.deliveryAddress && (
               <div className="px-4 py-5 sm:px-6">
                 <h4 className="text-base font-medium text-gray-900 mb-4">Delivery Information</h4>

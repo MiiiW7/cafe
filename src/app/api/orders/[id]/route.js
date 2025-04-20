@@ -5,10 +5,14 @@ import { getSession } from '../../../../lib/session';
 // GET /api/orders/[id]
 export async function GET(request, { params }) {
   try {
+    console.log('GET /api/orders/[id] - Request received for order ID:', params.id);
+    
     const session = await getSession(request);
+    console.log('Session:', session ? 'exists' : 'null');
     
     // Check authentication
     if (!session?.user) {
+      console.log('Authentication missing');
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -17,57 +21,75 @@ export async function GET(request, { params }) {
 
     // Convert orderId from string to integer
     const orderId = parseInt(params.id, 10);
+    if (isNaN(orderId)) {
+      console.log('Invalid order ID:', params.id);
+      return NextResponse.json(
+        { error: 'Invalid order ID format' },
+        { status: 400 }
+      );
+    }
+    
     const userId = session.user.id;
     const userRole = session.user.role;
+    console.log('User requesting order:', { userId, role: userRole });
+    console.log('Looking for order with ID:', orderId);
 
     // Fetch the order with related items
-    const order = await prisma.order.findUnique({
-      where: {
-        id: orderId,
-      },
-      include: {
-        items: {
-          include: {
-            menuItem: {
-              include: {
-                category: true,
-              },
+    try {
+      const order = await prisma.order.findUnique({
+        where: {
+          id: orderId,
+        },
+        include: {
+          items: {
+            include: {
+              menuItem: true
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
             },
           },
         },
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
-    });
+      });
+      
+      console.log('Order found:', order ? 'yes' : 'no');
 
-    // Check if order exists
-    if (!order) {
+      // Check if order exists
+      if (!order) {
+        return NextResponse.json(
+          { error: 'Order not found' },
+          { status: 404 }
+        );
+      }
+
+      // Check if the user has permission to view this order
+      // Allow access if user is the order owner or an admin
+      if (order.userId !== userId && userRole !== 'ADMIN') {
+        console.log('Permission denied - user ID mismatch:', { orderUserId: order.userId, requestUserId: userId });
+        return NextResponse.json(
+          { error: 'You do not have permission to view this order' },
+          { status: 403 }
+        );
+      }
+
+      console.log('Returning order data with items:', order.items?.length || 0);
+      return NextResponse.json(order);
+    } catch (dbError) {
+      console.error('Database error fetching order:', dbError);
       return NextResponse.json(
-        { error: 'Order not found' },
-        { status: 404 }
+        { error: 'Database error: ' + dbError.message },
+        { status: 500 }
       );
     }
-
-    // Check if the user has permission to view this order
-    // Allow access if user is the order owner or an admin
-    if (order.userId !== userId && userRole !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'You do not have permission to view this order' },
-        { status: 403 }
-      );
-    }
-
-    return NextResponse.json(order);
 
   } catch (error) {
     console.error('Error fetching order:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch order details' },
+      { error: 'Failed to fetch order details: ' + error.message },
       { status: 500 }
     );
   }
