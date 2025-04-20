@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../../lib/prisma';
-import bcrypt from 'bcrypt';
 
 // GET a specific user by ID
 export async function GET(request, { params }) {
@@ -73,10 +72,9 @@ export async function PUT(request, { params }) {
       name: data.name
     };
     
-    // If password is provided, hash it
+    // If password is provided, use it directly
     if (data.password) {
-      const salt = await bcrypt.genSalt(10);
-      updateData.password = await bcrypt.hash(data.password, salt);
+      updateData.password = data.password;
     }
     
     // Update user
