@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import PageLayout from '../page-layout';
@@ -14,20 +14,10 @@ export default function OrderHistory() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Redirect if user is not logged in
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-
-    fetchUserOrders();
-  }, [user, router, fetchUserOrders]);
-
-  const fetchUserOrders = async () => {
+  const fetchUserOrders = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/orders?userId=${user.id}`);
+      const response = await fetch(`/api/orders?userId=${user?.id}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch orders');
@@ -41,7 +31,17 @@ export default function OrderHistory() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    // Redirect if user is not logged in
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    fetchUserOrders();
+  }, [user, router, fetchUserOrders]);
 
   // Format date
   const formatDate = (dateString) => {

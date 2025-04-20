@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import PageLayout from '../../page-layout';
@@ -16,20 +16,7 @@ export default function OrderManagement() {
   const [statusFilter, setStatusFilter] = useState('');
   const [expandedOrder, setExpandedOrder] = useState(null);
 
-  useEffect(() => {
-    // Check if user is logged in and is an admin
-    if (!user) {
-      router.push('/login');
-      return;
-    } else if (!isAdmin()) {
-      router.push('/');
-      return;
-    }
-
-    fetchOrders();
-  }, [user, isAdmin, router, statusFilter, fetchOrders]);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
       const url = statusFilter 
@@ -59,7 +46,20 @@ export default function OrderManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter]);
+
+  useEffect(() => {
+    // Check if user is logged in and is an admin
+    if (!user) {
+      router.push('/login');
+      return;
+    } else if (!isAdmin()) {
+      router.push('/');
+      return;
+    }
+
+    fetchOrders();
+  }, [user, isAdmin, router, statusFilter, fetchOrders]);
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {

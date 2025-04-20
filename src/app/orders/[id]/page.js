@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -16,17 +16,7 @@ export default function OrderDetail({ params }) {
   const [loading, setLoading] = useState(true);
   const orderId = params.id;
 
-  useEffect(() => {
-    // Redirect if user is not logged in
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-
-    fetchOrderDetails();
-  }, [user, router, orderId, fetchOrderDetails]);
-
-  const fetchOrderDetails = async () => {
+  const fetchOrderDetails = useCallback(async () => {
     try {
       setLoading(true);
       console.log('Fetching order details for ID:', orderId);
@@ -40,7 +30,7 @@ export default function OrderDetail({ params }) {
       console.log('Order details received:', data);
       
       // Verify the order belongs to the current user
-      if (data.userId !== user.id && user.role !== 'ADMIN') {
+      if (data.userId !== user?.id && user?.role !== 'ADMIN') {
         toast.error('You do not have permission to view this order');
         router.push('/orders');
         return;
@@ -53,7 +43,17 @@ export default function OrderDetail({ params }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orderId, router, user]);
+
+  useEffect(() => {
+    // Redirect if user is not logged in
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    fetchOrderDetails();
+  }, [user, router, fetchOrderDetails]);
 
   // Format date
   const formatDate = (dateString) => {
