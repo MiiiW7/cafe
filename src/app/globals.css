@@ -24,3 +24,112 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Improved text contrast for better readability */
+.bg-white h1, .bg-white h2, .bg-white h3, .bg-white h4, .bg-white h5, .bg-white h6 {
+  @apply text-gray-900;
+}
+
+.bg-white p, .bg-white span:not(.text-white):not(.text-amber-600):not(.text-amber-800):not(.text-green-800):not(.text-purple-800):not(.text-red-600):not(.text-red-800) {
+  @apply text-gray-700;
+}
+
+.bg-white label {
+  @apply text-gray-800; 
+}
+
+.bg-white .text-gray-500 {
+  @apply text-gray-600;
+}
+
+/* Table styles with improved contrast */
+table tbody tr {
+  @apply bg-white;
+}
+
+table tbody td {
+  @apply text-gray-800;
+}
+
+table thead th {
+  @apply text-gray-700 font-medium;
+}
+
+/* Menu item card improvements */
+.bg-white .text-gray-900 {
+  @apply font-semibold;
+}
+
+/* Form inputs with better contrast */
+input::placeholder {
+  @apply text-gray-500;
+}
+
+.bg-white input, .bg-white select, .bg-white textarea {
+  @apply text-gray-900;
+}
+
+/* Cancel button with better contrast */
+button.bg-white {
+  @apply text-gray-800 border-gray-400;
+}
+
+/* Add these additional styles */
+
+/* Improved contrast for table headers */
+table th {
+  @apply bg-gray-100 text-gray-800 font-semibold;
+}
+
+/* Better contrast for table borders */
+table, th, td {
+  @apply border-gray-300;
+}
+
+/* Stronger text for navigation */
+nav a, nav button {
+  @apply font-medium;
+}
+
+/* Better contrast for descriptions */
+.text-gray-500 {
+  @apply text-gray-600;
+}
+
+/* High contrast for important labels and headings */
+h1, h2, h3 {
+  @apply font-bold text-gray-900;
+}
+
+/* Button text improvements */
+button.bg-white {
+  @apply font-medium;
+}
+
+/* List items with better contrast */
+li {
+  @apply text-gray-800;
+}
+
+/* Add this to improve navbar visibility */
+
+/* Navbar specific styles */
+header.bg-white nav a {
+  @apply text-gray-800 font-medium;
+}
+
+header.bg-white nav a:hover {
+  @apply text-amber-600;
+}
+
+/* Make sure light text doesn't appear on white background */
+.bg-white .text-gray-400,
+.bg-white .text-gray-500,
+.bg-white .text-gray-600 {
+  @apply text-gray-700;
+}
+
+/* Mobile menu links */
+header .sm\:hidden a {
+  @apply text-gray-800 font-medium;
+}
