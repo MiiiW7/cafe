@@ -129,7 +129,7 @@ export async function POST(request) {
     }
 
     const userId = session.user.id;
-    const { items, deliveryAddress, contactNumber, paymentMethod, specialInstructions } = await request.json();
+    const { items } = await request.json();
 
     // Validate request body
     if (!items || !Array.isArray(items) || items.length === 0) {
