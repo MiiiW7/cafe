@@ -22,7 +22,7 @@ export default function OrderHistory() {
     }
 
     fetchUserOrders();
-  }, [user, router]);
+  }, [user, router, fetchUserOrders]);
 
   const fetchUserOrders = async () => {
     try {

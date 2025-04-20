@@ -27,7 +27,7 @@ export default function OrderManagement() {
     }
 
     fetchOrders();
-  }, [user, isAdmin, router, statusFilter]);
+  }, [user, isAdmin, router, statusFilter, fetchOrders]);
 
   const fetchOrders = async () => {
     try {

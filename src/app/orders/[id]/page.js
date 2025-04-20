@@ -24,7 +24,7 @@ export default function OrderDetail({ params }) {
     }
 
     fetchOrderDetails();
-  }, [user, router, orderId]);
+  }, [user, router, orderId, fetchOrderDetails]);
 
   const fetchOrderDetails = async () => {
     try {
@@ -114,7 +114,7 @@ export default function OrderDetail({ params }) {
         ) : !order ? (
           <div className="bg-white rounded-lg shadow-md p-8 text-center">
             <h3 className="text-lg font-medium text-gray-900">Order not found</h3>
-            <p className="mt-1 text-sm text-gray-500">The order you're looking for doesn't exist or you don't have permission to view it.</p>
+            <p className="mt-1 text-sm text-gray-500">The order you&apos;re looking for doesn&apos;t exist or you don&apos;t have permission to view it.</p>
             <Link 
               href="/orders" 
               className="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"

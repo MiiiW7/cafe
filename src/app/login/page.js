@@ -122,7 +122,7 @@ export default function LoginPage() {
 
               <div className="mt-6 grid grid-cols-1 gap-3">
                 <p className="text-center text-xs text-gray-500">
-                  Note: We're using simplified login for development. In production, you'd need to enter a password.
+                  Note: We&apos;re using simplified login for development. In production, you&apos;d need to enter a password.
                 </p>
               </div>
             </div>
